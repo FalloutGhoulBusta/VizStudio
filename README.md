@@ -61,6 +61,12 @@ graph TD
     D --> E
 ```
 
+### 📸 **Screenshot**
+
+![Mermaid Diagram Example](./screenshots/example-diagram.png)
+
+*Example of a rendered Mermaid diagram in the viewer*
+
 ## 🎨 **Design Highlights**
 
 ### **Color Palette**
