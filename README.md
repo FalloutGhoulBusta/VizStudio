@@ -116,6 +116,17 @@ Unlike basic Mermaid editors, this renderer offers:
 - **🎯 User Focused** - Intuitive controls and helpful features
 - **🔧 No Setup** - Just open and start creating
 
+## 🗺️ **Roadmap**
+
+Upcoming features and improvements planned for future releases:
+
+- **🔷 Add Shapes** - Enhanced shape library for more diagram variety
+- **📦 Add Subgraph** - Support for nested diagram structures
+- **🎯 Add Icon** - Icon integration for richer visual elements
+- **📝 Text Box** - Standalone text elements for annotations
+- **🎨 Design and Rearrange** - Advanced layout and design tools
+- **↩️ Redo and Undo Button** - Full edit history management
+
 ---
 
 **Ready to create beautiful diagrams?** Open `mermaid-parser.html` and start designing! 🚀
