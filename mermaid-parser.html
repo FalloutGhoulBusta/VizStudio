@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mermaid Diagram Renderer</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
     <style>
         * {
@@ -292,6 +293,26 @@
             font-size: 12px;
         }
 
+        /* Fit buttons in preview header */
+        .preview-actions .fit-btn {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+        }
+
+        .preview-actions .fit-btn:hover {
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 12px rgba(243, 156, 18, 0.4);
+        }
+
         #diagramContainer {
             flex: 1;
             padding: 20px;
@@ -303,6 +324,87 @@
             position: relative;
             cursor: grab;
         }
+
+        /* Floating control panels */
+        .floating-controls {
+            position: absolute;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            display: flex;
+            gap: 4px;
+        }
+
+
+
+        .floating-controls.bottom-right {
+            bottom: 15px;
+            right: 15px;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .floating-controls.bottom-left {
+            bottom: 15px;
+            left: 15px;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 4px;
+        }
+
+        .floating-controls button {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.3);
+        }
+
+        .floating-controls button:hover {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 12px rgba(44, 62, 80, 0.4);
+        }
+
+        .floating-controls button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 6px rgba(44, 62, 80, 0.3);
+        }
+
+        /* Special styling for zoom buttons */
+        .floating-controls button.zoom-btn {
+            background: linear-gradient(135deg, #23d5ab, #2c3e50);
+        }
+
+        .floating-controls button.zoom-btn:hover {
+            background: linear-gradient(135deg, #2c3e50, #23d5ab);
+        }
+
+        /* Special styling for directional buttons */
+        .floating-controls button.direction-btn {
+            background: linear-gradient(135deg, #9b59b6, #e73c7e);
+        }
+
+        .floating-controls button.direction-btn:hover {
+            background: linear-gradient(135deg, #e73c7e, #9b59b6);
+        }
+
+
 
         #diagramContainer.panning {
             cursor: grabbing;
@@ -405,6 +507,36 @@
             #diagramContainer {
                 min-height: 400px;
             }
+
+            /* Mobile adjustments for floating controls */
+            .floating-controls {
+                padding: 6px;
+            }
+
+
+
+            .floating-controls.bottom-right {
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .floating-controls.bottom-left {
+                bottom: 10px;
+                left: 10px;
+            }
+
+            .floating-controls button {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+
+
+
+            /* Adjust spacers for mobile */
+            .floating-controls .control-row div[style*="width: 32px"] {
+                width: 28px !important;
+            }
         }
     </style>
 </head>
@@ -466,14 +598,33 @@ graph TD
                 <div class="preview-header">
                     <div class="preview-title">👁️ Live Preview</div>
                     <div class="preview-actions">
-                        <button onclick="zoomIn()">🔍 Zoom In</button>
-                        <button onclick="zoomOut()">🔍 Zoom Out</button>
-                        <button onclick="resetZoom()">🔄 Reset Zoom</button>
-                        <button onclick="resetPan()">📍 Reset Pan</button>
+                        <button class="fit-btn" onclick="fitToScreen()" title="Fit to Screen">📐 Fit</button>
+                        <button class="fit-btn" onclick="resetView()" title="Reset View">🔄 Reset</button>
                     </div>
                 </div>
                 <div id="diagramContainer">
                     <div id="mermaidDiagram"></div>
+
+                    <!-- Bottom left controls: Zoom buttons -->
+                    <div class="floating-controls bottom-left">
+                        <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
+                        <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+                    </div>
+
+                    <!-- Bottom right controls: Directional arrows -->
+                    <div class="floating-controls bottom-right">
+                        <!-- Directional controls in keyboard arrow layout -->
+                        <div class="control-row">
+                            <div style="width: 32px;"></div> <!-- Spacer for left alignment -->
+                            <button class="direction-btn" onclick="panUp()" title="Pan Up">↑</button>
+                            <div style="width: 32px;"></div> <!-- Spacer for right alignment -->
+                        </div>
+                        <div class="control-row">
+                            <button class="direction-btn" onclick="panLeft()" title="Pan Left">←</button>
+                            <button class="direction-btn" onclick="panDown()" title="Pan Down">↓</button>
+                            <button class="direction-btn" onclick="panRight()" title="Pan Right">→</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -516,6 +667,10 @@ graph TD
         let startY = 0;
         let lastPanX = 0;
         let lastPanY = 0;
+
+        // Scroll zoom variables
+        let scrollTimeout = null;
+        let isScrolling = false;
 
         // **Example templates for different diagram types**
         const examples = {
@@ -704,6 +859,55 @@ graph TD
 
         // **Pan functions**
         function resetPan() {
+            panX = 0;
+            panY = 0;
+            lastPanX = 0;
+            lastPanY = 0;
+            applyZoom();
+        }
+
+        // **Fit to screen function**
+        function fitToScreen() {
+            const container = document.getElementById('diagramContainer');
+            const diagramDiv = document.getElementById('mermaidDiagram');
+            const svgElement = diagramDiv.querySelector('svg');
+
+            if (!container || !diagramDiv || !svgElement) return;
+
+            // Get container dimensions (excluding padding)
+            const containerRect = container.getBoundingClientRect();
+            const containerWidth = containerRect.width - 40; // Account for padding
+            const containerHeight = containerRect.height - 40;
+
+            // Get SVG dimensions
+            const svgRect = svgElement.getBoundingClientRect();
+            let svgWidth = svgRect.width;
+            let svgHeight = svgRect.height;
+
+            // If SVG has viewBox, use those dimensions
+            if (svgElement.viewBox && svgElement.viewBox.baseVal) {
+                svgWidth = svgElement.viewBox.baseVal.width;
+                svgHeight = svgElement.viewBox.baseVal.height;
+            }
+
+            // Calculate scale to fit both width and height
+            const scaleX = containerWidth / svgWidth;
+            const scaleY = containerHeight / svgHeight;
+            const scale = Math.min(scaleX, scaleY, 1); // Don't scale up beyond 100%
+
+            // Apply the calculated zoom
+            currentZoom = scale;
+
+            // Center the diagram
+            panX = 0;
+            panY = 0;
+
+            applyZoom();
+        }
+
+        // **Reset view function (combines reset zoom and pan)**
+        function resetView() {
+            currentZoom = 1;
             panX = 0;
             panY = 0;
             lastPanX = 0;
@@ -1069,6 +1273,86 @@ ${svgString}`;
 
         // **Pan/Drag Event Handlers**
         const diagramContainer = document.getElementById('diagramContainer');
+
+        // Scroll to zoom functionality
+        diagramContainer.addEventListener('wheel', function(e) {
+            // Prevent default scrolling behavior
+            e.preventDefault();
+
+            // Don't zoom if interacting with buttons or interactive elements
+            if (e.target.closest('button, [onclick], a')) {
+                return;
+            }
+
+            // Clear any existing timeout
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+
+            // Set scrolling state
+            if (!isScrolling) {
+                isScrolling = true;
+                // Temporarily disable transitions for smoother scrolling
+                const diagramDiv = document.getElementById('mermaidDiagram');
+                if (diagramDiv) {
+                    diagramDiv.style.transition = 'none';
+                }
+            }
+
+            // Get the mouse position relative to the container
+            const rect = diagramContainer.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            // Calculate zoom direction and amount
+            const zoomDirection = e.deltaY > 0 ? -1 : 1; // Negative deltaY = zoom in, positive = zoom out
+
+            // Use smaller zoom factor for smoother experience
+            let zoomFactor = 0.05; // Reduced from 0.1 for smoother increments
+
+            // Adjust zoom factor based on current zoom level for more natural feel
+            if (currentZoom < 0.5) {
+                zoomFactor = 0.03; // Slower when zoomed out
+            } else if (currentZoom > 2) {
+                zoomFactor = 0.08; // Faster when zoomed in
+            }
+
+            const oldZoom = currentZoom;
+
+            // Apply zoom with limits
+            if (zoomDirection > 0) {
+                currentZoom = Math.min(currentZoom + zoomFactor, 3); // Max zoom 3x
+            } else {
+                currentZoom = Math.max(currentZoom - zoomFactor, 0.3); // Min zoom 0.3x
+            }
+
+            // Only proceed if zoom actually changed
+            if (currentZoom !== oldZoom) {
+                // Calculate zoom ratio for position adjustment
+                const zoomRatio = currentZoom / oldZoom;
+
+                // Adjust pan position to zoom towards mouse cursor
+                // This keeps the point under the mouse cursor stationary during zoom
+                panX = mouseX - (mouseX - panX) * zoomRatio;
+                panY = mouseY - (mouseY - panY) * zoomRatio;
+
+                // Constrain pan to keep diagram visible
+                constrainPan();
+
+                // Apply the zoom and pan
+                applyZoom();
+            }
+
+            // Set timeout to re-enable transitions after scrolling stops
+            scrollTimeout = setTimeout(() => {
+                isScrolling = false;
+                const diagramDiv = document.getElementById('mermaidDiagram');
+                if (diagramDiv) {
+                    diagramDiv.style.transition = ''; // Restore default transitions
+                }
+            }, 150); // Wait 150ms after last scroll event
+
+        }, { passive: false });
 
         // Mouse events for desktop
         diagramContainer.addEventListener('mousedown', function(e) {
