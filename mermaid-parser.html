@@ -898,6 +898,27 @@ graph TD
         function validateMermaidSyntax(code) {
             if (!code) return code;
 
+            // **Strip markdown code block formatting first**
+            let cleanedCode = code.trim();
+            const originalTrimmed = cleanedCode;
+
+            // Remove ```mermaid at the beginning
+            if (cleanedCode.startsWith('```mermaid')) {
+                cleanedCode = cleanedCode.replace(/^```mermaid\s*\n?/, '');
+            }
+            // Remove generic ``` at the beginning
+            else if (cleanedCode.startsWith('```')) {
+                cleanedCode = cleanedCode.replace(/^```\s*\n?/, '');
+            }
+
+            // Remove ``` at the end
+            if (cleanedCode.endsWith('```')) {
+                cleanedCode = cleanedCode.replace(/\n?\s*```$/, '');
+            }
+
+            // Update code to use the cleaned version
+            code = cleanedCode;
+
             const commonErrors = [
                 // Arrow syntax fixes
                 { pattern: /\-\-(?!\>|\-)/g, fix: '-->' },
@@ -930,6 +951,11 @@ graph TD
 
             let fixedCode = code;
             let appliedFixes = [];
+
+            // Track if markdown formatting was stripped
+            if (cleanedCode !== originalTrimmed) {
+                appliedFixes.push('Stripped markdown code block formatting (```mermaid or ```)');
+            }
 
             commonErrors.forEach((rule, index) => {
                 const beforeFix = fixedCode;
