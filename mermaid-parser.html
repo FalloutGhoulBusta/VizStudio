@@ -1556,6 +1556,9 @@ Return only the corrected Mermaid code:`;
                 // Apply the fixed code
                 document.getElementById('mermaidInput').value = fixedCode;
 
+                // Clear the "AI is analyzing..." message immediately after applying the fix
+                container.innerHTML = '';
+
                 // Log success details to console
                 console.log(`✅ AI has fixed your ${errorContext.diagramType} diagram!`);
                 if (errorContext.commonPatterns.length > 0) {
