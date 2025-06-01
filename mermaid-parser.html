@@ -745,7 +745,7 @@ graph TD
         <!-- Footer with enhanced features info -->
         <div class="footer">
             <p><em>⚠️ Note: Free tier users are limited to 50 AI model requests per day. Use the AI Fix feature wisely!</em></p>
-            <p><em>🚀 Enhanced Features: ⚡ Quick Fix (offline), 🤖 AI Fix (structured outputs), 📊 Smart caching, 🔍 Error analysis, 🔄 Fallback support</em></p>
+            <p><em>🚀 Enhanced Features: ⚡ Quick Fix (offline), 🤖 AI Fix (context-aware), 📊 Smart caching, 🔍 Error analysis, 🔄 Fallback support</em></p>
         </div>
     </div>
 
@@ -1437,43 +1437,12 @@ graph TD
             </div>`;
 
             try {
-                // **Enhanced AI Prompt with Structured Output Context**
-                const systemPrompt = `You are an expert Mermaid diagram syntax corrector. Your response must be a complete, valid JSON object with exactly these fields:
+                // **Simple approach optimized for Llama models**
+                console.log('Attempting AI fix with context-aware prompts...');
 
-{
-  "fixed_code": "corrected mermaid code here",
-  "changes_made": ["list", "of", "changes"],
-  "confidence": 85
-}
+                const systemPrompt = `You are an expert Mermaid diagram syntax corrector. Fix the provided Mermaid code and return ONLY the corrected code without any explanations or formatting.`;
 
-CRITICAL REQUIREMENTS:
-- Return ONLY the JSON object, nothing else
-- Ensure the JSON is complete and properly closed with }
-- Do not include markdown formatting or explanations
-- The fixed_code should be valid Mermaid syntax for ${errorContext.diagramType} diagrams
-- Confidence should be a number between 0-100
-
-Context: Error on line ${errorContext.errorLine || 'unknown'}, ${errorContext.commonPatterns.length} issues detected.`;
-
-                const userPrompt = `Fix this Mermaid diagram code that has syntax errors:
-
-Error: ${errorContext.errorMessage}
-${errorContext.errorLine ? `Error appears around line: ${errorContext.errorLine}` : ''}
-
-${errorContext.commonPatterns.length > 0 ? `
-Detected issues:
-${errorContext.commonPatterns.map(issue => `- Line ${issue.line}: ${issue.issue} (${issue.suggestion})`).join('\n')}
-` : ''}
-
-Code to fix:
-${currentCode}`;
-
-                // **Try simple approach first - Llama models work better without structured outputs**
-                console.log('Attempting AI fix with simplified approach...');
-
-                const simpleSystemPrompt = `You are an expert Mermaid diagram syntax corrector. Fix the provided Mermaid code and return ONLY the corrected code without any explanations or formatting.`;
-
-                const simpleUserPrompt = `Fix this broken Mermaid code:
+                const userPrompt = `Fix this broken Mermaid code:
 
 Error: ${errorContext.errorMessage}
 ${errorContext.errorLine ? `Error on line: ${errorContext.errorLine}` : ''}
@@ -1496,16 +1465,15 @@ Return only the corrected Mermaid code:`;
                         messages: [
                             {
                                 role: 'system',
-                                content: simpleSystemPrompt
+                                content: systemPrompt
                             },
                             {
                                 role: 'user',
-                                content: simpleUserPrompt
+                                content: userPrompt
                             }
                         ],
                         max_tokens: 1000,
                         temperature: 0.1
-                        // **Removed structured outputs - they don't work well with this model**
                     })
                 });
 
@@ -2054,7 +2022,7 @@ ${svgString}`;
             console.log('  ✅ Progressive Enhancement - Offline syntax validation');
             console.log('  ⚡ Quick Fix - Instant common pattern corrections');
             console.log('  🤖 AI Fix - Enhanced prompts with context');
-            console.log('  🔧 Structured Outputs - JSON Schema validation for AI responses');
+            console.log('  🔧 Context-Aware Prompts - Enhanced AI prompts with error context');
             console.log('  🔄 Fallback Support - Graceful degradation for unsupported models');
             console.log('  📊 Cache Stats:', getCacheStats());
         }
